@@ -114,7 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				92AFD2F927A2532400ADADC0 /* Anchorage.swift */,
-				92AFD2F827A252FB00ADADC0 /* Views */,
+				92AFD2F827A252FB00ADADC0 /* Example */,
 				92AFD2BA27A2527300ADADC0 /* AppDelegate.swift */,
 				92AFD2BC27A2527300ADADC0 /* SceneDelegate.swift */,
 				92AFD2C027A2527300ADADC0 /* Main.storyboard */,
@@ -142,7 +142,7 @@
 			path = AnchorageExampleUITests;
 			sourceTree = "<group>";
 		};
-		92AFD2F827A252FB00ADADC0 /* Views */ = {
+		92AFD2F827A252FB00ADADC0 /* Example */ = {
 			isa = PBXGroup;
 			children = (
 				92AFD2BE27A2527300ADADC0 /* ViewController.swift */,
@@ -153,7 +153,7 @@
 				92AFD2EE27A252E000ADADC0 /* TableViewExample.swift */,
 				92AFD2EF27A252E000ADADC0 /* TwoViewsExample.swift */,
 			);
-			path = Views;
+			path = Example;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
