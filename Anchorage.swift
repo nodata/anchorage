@@ -16,6 +16,7 @@ protocol Anchorable: UIView {
     func floatingSize(in view: UIView) -> CGSize?
     var state: AnchorableState { get set }
     
+    func willStartFloating()
     func didStartFloating()
     func didAttach(to anchor: Anchor)
 }
@@ -53,8 +54,9 @@ extension Anchorable {
         }
     }
     
-    // Again both of these are designed to help you make decisions on what to do with your Anchorable
+    // Again these are designed to help you make decisions on what to do with your Anchorable
     // setting shadows, UI state, external state etc
+    func willStartFloating() { }
     func didStartFloating() { }
     func didAttach(to anchor: Anchor) { }
 }
@@ -179,13 +181,14 @@ extension Anchorable {
         guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot else { return }
         guard let rootView = root.view else { return }
         let location = touches.first?.location(in: rootView) ?? .zero
-        
+
         if state.isFloating {
             state.constraints?.x.constant = location.x - bounds.size.width/2
             state.constraints?.y.constant = location.y - bounds.size.height/2
             highlightAnchor(at: center, with: self)
         } else if abs(location.x - state.initialTouchPoint.x) > liftThreshold
                     || abs(location.y - state.initialTouchPoint.y) > liftThreshold {
+            willStartFloating()
             attachToRootView(touches, with: event)
             state.isFloating = true
             didStartFloating()
@@ -210,29 +213,28 @@ extension Anchorable {
         
         if superview != rootView { rootView.addSubview(self) }
         
-        let p = rootView.convert(frame.origin, to: rootView)
-        let location = touches.first?.location(in: rootView) ?? .zero
+        let p = rootView.convert(frame.origin, to: nil)
         let size = floatingSize(in: rootView) ?? CGSize(width: rootView.bounds.size.width * 0.4,
                                                         height: rootView.bounds.size.width * 0.3)
         
-        let newConstraints = Anchor.Constraints(x: leadingAnchor.constraint(equalTo: rootView.leadingAnchor, constant: p.x),
-                                                y: topAnchor.constraint(equalTo: rootView.topAnchor, constant: p.y),
+        let newConstraints = Anchor.Constraints(x: leadingAnchor.constraint(equalTo: rootView.leadingAnchor,
+                                                                            constant: p.x),
+                                                y: topAnchor.constraint(equalTo: rootView.topAnchor,
+                                                                        constant: p.y),
                                                 w: widthAnchor.constraint(equalToConstant: size.width),
                                                 h: heightAnchor.constraint(equalToConstant: size.height))
         
         NSLayoutConstraint.activate(newConstraints.all)
         rootView.setNeedsLayout()
-        rootView.layoutIfNeeded()
-        
-        newConstraints.x.constant = location.x - size.width/2
-        newConstraints.y.constant = location.y - size.height/2
-        rootView.setNeedsLayout()
-        
+        setNeedsLayout()
+
         UIView.animate(withDuration: 0.4,
                        delay: 0.0,
                        usingSpringWithDamping: 0.85,
                        initialSpringVelocity: 0.1,
-                       options: [.beginFromCurrentState, .curveEaseOut]) { rootView.layoutIfNeeded() }
+                       options: [.beginFromCurrentState, .curveEaseOut]) {
+                                rootView.layoutIfNeeded()
+                                self.layoutIfNeeded() }
                        completion: { _ in }
         
         state.constraints = newConstraints

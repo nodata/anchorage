@@ -9,11 +9,11 @@ import Foundation
 import UIKit
 
 
-class ComponentMenuViewController: UIViewController {
+class ComponentMenuView: UIView {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
+    init() {
+        super.init(frame: .zero)
+        backgroundColor = UIColor(white: 0.9, alpha: 1.0)
         
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -41,41 +41,44 @@ class ComponentMenuViewController: UIViewController {
         blackAnchorImageView.translatesAutoresizingMaskIntoConstraints = false
         blackAnchorImageView.contentMode = .scaleAspectFit
         
-        view.addSubview(titleLabel)
-        view.addSubview(bodyLabel)
-        view.addSubview(colorView)
-        view.addSubview(anchorImageView)
-        view.addSubview(blackAnchorImageView)
+        addSubview(titleLabel)
+        addSubview(bodyLabel)
+        addSubview(colorView)
+        addSubview(anchorImageView)
+        addSubview(blackAnchorImageView)
 
         let padding = 16.0
         let size = 52.0
-        
-        // Ideally this would all be in a tableview but I'm lazy
+        let bottomPadding = 40.0
         
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
-            titleLabel.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -(150 + padding + size/2)),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -(bottomPadding + 110 + padding + size)),
 
-            bodyLabel.bottomAnchor.constraint(equalTo: view.centerYAnchor, constant: -(padding + size/2)),
-            bodyLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            bodyLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            bodyLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -(bottomPadding + padding + size)),
+            bodyLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
+            bodyLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
             
-            colorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            colorView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+            colorView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -bottomPadding),
+            colorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
             colorView.widthAnchor.constraint(equalToConstant: size),
             colorView.heightAnchor.constraint(equalToConstant: size),
             
-            anchorImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            anchorImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            anchorImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -bottomPadding),
+            anchorImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             anchorImageView.widthAnchor.constraint(equalToConstant: size),
             anchorImageView.heightAnchor.constraint(equalToConstant: size),
             
-            blackAnchorImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            blackAnchorImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+            blackAnchorImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -bottomPadding),
+            blackAnchorImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
             blackAnchorImageView.widthAnchor.constraint(equalToConstant: size),
             blackAnchorImageView.heightAnchor.constraint(equalToConstant: size)
         ])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -97,12 +100,15 @@ class ChangingColorView: UIView, Anchorable {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func willStartFloating() {
+        // This is a hack to dismiss the component library.. obviously don't do this in a production app
+        guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? ViewController else { return }
+        guard superview != root.view else { return }
+        root.hideMenu()
+    }
+    
     func didStartFloating() {
         backgroundColor = .green
-        
-        // This is a hack to dismiss the component library.. obviously don't do this in a production app
-        guard let root = UIApplication.shared.keyWindowScene?.rootViewController else { return }
-        root.presentedViewController?.dismiss(animated: true)
     }
     
     func didAttach(to anchor: Anchor) {
@@ -111,17 +117,23 @@ class ChangingColorView: UIView, Anchorable {
 }
 
 extension UIImageView: Anchorable {
-    func didStartFloating() {
+    func willStartFloating() {
         // Normally I'd doubt you'd ever want generic components like UIImageView to have these overridden
         // unless you're adding shadows or updating the view itself in some way
-        guard let root = UIApplication.shared.keyWindowScene?.rootViewController else { return }
-        root.presentedViewController?.dismiss(animated: true)
+        guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? ViewController else { return }
+        guard superview != root.view else { return }
+        root.hideMenu()
     }
 }
 extension UILabel: Anchorable {
-    func didStartFloating() {
-        guard let root = UIApplication.shared.keyWindowScene?.rootViewController else { return }
-        root.presentedViewController?.dismiss(animated: true)
+    
+    func floatingSize(in view: UIView) -> CGSize? { CGSize(width: view.frame.size.width * 0.8,
+                                                           height: bounds.size.height) }
+    
+    func willStartFloating() {
+        guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? ViewController else { return }
+        guard superview != root.view else { return }
+        root.hideMenu()
     }
 }
 

@@ -15,7 +15,10 @@ extension ViewController: AnchoringRoot {
 class ViewController: UIViewController {
     
     private static let cornerPadding: CGFloat = 16.0
-    
+    private var menuViewYConstraint: NSLayoutConstraint!
+    private let menuView = ComponentMenuView()
+    private let menuHeight = 300.0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .red
@@ -38,6 +41,12 @@ class ViewController: UIViewController {
         componentButton.addTarget(self, action: #selector(componentButtonTapped), for: .touchUpInside)
         view.addSubview(componentButton)
         
+        menuView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(menuView)
+        
+        menuViewYConstraint = menuView.bottomAnchor.constraint(equalTo: view.bottomAnchor,
+                                                               constant: menuHeight)
+        
         NSLayoutConstraint.activate([
             nav.view.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             nav.view.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -47,14 +56,35 @@ class ViewController: UIViewController {
             componentButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             componentButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20.0),
             componentButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            componentButton.heightAnchor.constraint(equalToConstant: buttonSize)
+            componentButton.heightAnchor.constraint(equalToConstant: buttonSize),
+            
+            menuViewYConstraint,
+            menuView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            menuView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            menuView.heightAnchor.constraint(equalToConstant: menuHeight),
         ])
     }
     
     @objc private func componentButtonTapped() {
-        present(ComponentMenuViewController(), animated: true, completion: nil)
+        menuViewYConstraint.constant = 0.0
+        animate()
     }
 
+    func hideMenu() {
+        menuViewYConstraint.constant = menuHeight
+        animate()
+    }
+    
+    private func animate() {
+        view.setNeedsLayout()
+        UIView.animate(withDuration: 0.65,
+                       delay: 0.0,
+                       usingSpringWithDamping: 0.85,
+                       initialSpringVelocity: 0.2,
+                       options: [.beginFromCurrentState, .curveEaseOut]) { self.view.layoutIfNeeded() }
+                       completion: { _ in }
+    }
+    
     // MARK: - Accessors
     
     // Note how the intercept rects take up 1/4 of the screen so that
