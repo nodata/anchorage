@@ -172,8 +172,8 @@ extension Anchorable {
     
     fileprivate func began(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot else { return }
-        guard let rootView = root.view, let superview = superview else { return }
-        let location = touches.first?.location(in: superview) ?? .zero
+        guard let rootView = root.view else { return }
+        let location = touches.first?.location(in: rootView) ?? .zero
         state.initialTouchPoint = location
     }
     
@@ -212,7 +212,6 @@ extension Anchorable {
         removeAllConstraints()
         alpha = 0.8
         
-        let location = touches.first?.location(in: rootView) ?? .zero
         let p = convert(bounds.origin, to: rootView)
         if superview != rootView { rootView.addSubview(self) }
         
@@ -220,15 +219,16 @@ extension Anchorable {
                                                         height: rootView.bounds.size.width * 0.3)
         
         let newConstraints = Anchor.Constraints(x: leadingAnchor.constraint(equalTo: rootView.leadingAnchor,
-                                                                            constant: p.x + location.x/2),
+                                                                            constant: p.x),
                                                 y: topAnchor.constraint(equalTo: rootView.topAnchor,
-                                                                        constant: p.y + location.y/2),
+                                                                        constant: p.y),
                                                 w: widthAnchor.constraint(equalToConstant: size.width),
                                                 h: heightAnchor.constraint(equalToConstant: size.height))
         
         NSLayoutConstraint.activate(newConstraints.all)
         rootView.setNeedsLayout()
         rootView.layoutIfNeeded()
+
         state.constraints = newConstraints
     }
     
