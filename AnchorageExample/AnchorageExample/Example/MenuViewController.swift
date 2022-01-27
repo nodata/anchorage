@@ -25,20 +25,20 @@ class MenuViewController: UIViewController {
     // MARK: - Accessors
     
     private var topAnchorRect: CGRect { CGRect(origin: CGPoint(x: MenuViewController.padding,
-                                                            y: view.bounds.size.height/2 - 170.0),
+                                                               y: view.bounds.size.height/2 - 220.0),
                                             size: CGSize(width: view.bounds.size.width - MenuViewController.padding*2,
                                                          height: 100.0)) }
     
     private var anchorRect: CGRect { CGRect(origin: CGPoint(x: MenuViewController.padding,
-                                                            y: view.bounds.size.height/2 - 50.0),
+                                                            y: view.bounds.size.height/2 - 100.0),
                                             size: CGSize(width: view.bounds.size.width - MenuViewController.padding*2,
-                                                         height: 100.0)) }
+                                                         height: 200.0)) }
     
     private func topAnchorConstraints(for view: UIView) -> Anchor.Constraints {
         let padding = MenuViewController.padding
         return Anchor.Constraints(x: view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,
                                                                    constant: padding),
-                                  y: view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -120),
+                                  y: view.bottomAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -120),
                                   w: view.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -padding*2),
                                   h: view.heightAnchor.constraint(equalToConstant: 100.0))
     }
@@ -49,7 +49,7 @@ class MenuViewController: UIViewController {
                                                                    constant: padding),
                                   y: view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
                                   w: view.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -padding*2),
-                                  h: view.heightAnchor.constraint(equalToConstant: 100.0))
+                                  h: view.heightAnchor.constraint(equalToConstant: 200.0))
     }
     
     // MARK: - Properties
