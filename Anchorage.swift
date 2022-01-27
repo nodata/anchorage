@@ -170,6 +170,69 @@ extension UIView {
 
 extension Anchorable {
     
+    func attach(at point: CGPoint) {
+        if let main = anchor(at: point) {
+            attach(to: main, animated: true)
+        } else if let floating = (UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot)?
+                                            .floatingAnchors(for: self)
+                                            .filter({ $0.interceptRect().contains(point) }).first {
+            attach(to: floating, animated: true)
+        } else {
+            removeFromSuperview()
+        }
+        
+        if let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot {
+            root.anchoringHighlightView.alpha = 0.0
+        }
+    }
+    
+    func attach(to anchor: Anchor, animated: Bool) {
+
+        guard let newConstraints = anchor.constraints(self) else { return }
+        translatesAutoresizingMaskIntoConstraints = false
+        alpha = 1.0
+        removeAllConstraints()
+
+        if let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot {
+            root.anchoringHighlightView.alpha = 0.0
+        }
+        
+        if superview != anchor.view { anchor.view.addSubview(self) }
+
+        anchor.anchored = self
+        state.anchor = anchor
+        
+        guard animated else {
+            NSLayoutConstraint.activate(newConstraints.all);
+            didAttach(to: anchor)
+            return
+        }
+        
+        let p = anchor.view.convert(frame.origin, to: anchor.view)
+        NSLayoutConstraint.activate(Anchor.Constraints(x: leadingAnchor.constraint(equalTo: anchor.view.leadingAnchor,
+                                                                                   constant: p.x),
+                                                       y: topAnchor.constraint(equalTo: anchor.view.topAnchor,
+                                                                               constant: p.y),
+                                                       w: widthAnchor.constraint(equalToConstant: frame.size.width),
+                                                       h: heightAnchor.constraint(equalToConstant: frame.size.height)).all)
+        anchor.view.setNeedsLayout()
+        anchor.view.layoutIfNeeded()
+
+        removeAllConstraints()
+        NSLayoutConstraint.activate(newConstraints.all)
+        anchor.view.setNeedsLayout()
+
+        UIView.animate(withDuration: 0.4,
+                       delay: 0.0,
+                       usingSpringWithDamping: 0.85,
+                       initialSpringVelocity: 0.2,
+                       options: [.beginFromCurrentState, .curveEaseOut]) {
+            anchor.view.layoutIfNeeded()
+        } completion: { _ in
+            self.didAttach(to: anchor)
+        }
+    }
+    
     fileprivate func began(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot else { return }
         guard let rootView = root.view else { return }
@@ -230,69 +293,6 @@ extension Anchorable {
         rootView.layoutIfNeeded()
 
         state.constraints = newConstraints
-    }
-    
-    private func attach(at point: CGPoint) {
-        if let main = anchor(at: point) {
-            attach(to: main, animated: true)
-        } else if let floating = (UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot)?
-                                            .floatingAnchors(for: self)
-                                            .filter({ $0.interceptRect().contains(point) }).first {
-            attach(to: floating, animated: true)
-        } else {
-            removeFromSuperview()
-        }
-        
-        if let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot {
-            root.anchoringHighlightView.alpha = 0.0
-        }
-    }
-    
-    private func attach(to anchor: Anchor, animated: Bool) {
-
-        guard let newConstraints = anchor.constraints(self) else { return }
-        translatesAutoresizingMaskIntoConstraints = false
-        alpha = 1.0
-        removeAllConstraints()
-
-        if let root = UIApplication.shared.keyWindowScene?.rootViewController as? AnchoringRoot {
-            root.anchoringHighlightView.alpha = 0.0
-        }
-        
-        if superview != anchor.view { anchor.view.addSubview(self) }
-
-        anchor.anchored = self
-        state.anchor = anchor
-        
-        guard animated else {
-            NSLayoutConstraint.activate(newConstraints.all);
-            didAttach(to: anchor)
-            return
-        }
-        
-        let p = anchor.view.convert(frame.origin, to: anchor.view)
-        NSLayoutConstraint.activate(Anchor.Constraints(x: leadingAnchor.constraint(equalTo: anchor.view.leadingAnchor,
-                                                                                   constant: p.x),
-                                                       y: topAnchor.constraint(equalTo: anchor.view.topAnchor,
-                                                                               constant: p.y),
-                                                       w: widthAnchor.constraint(equalToConstant: frame.size.width),
-                                                       h: heightAnchor.constraint(equalToConstant: frame.size.height)).all)
-        anchor.view.setNeedsLayout()
-        anchor.view.layoutIfNeeded()
-
-        removeAllConstraints()
-        NSLayoutConstraint.activate(newConstraints.all)
-        anchor.view.setNeedsLayout()
-
-        UIView.animate(withDuration: 0.4,
-                       delay: 0.0,
-                       usingSpringWithDamping: 0.85,
-                       initialSpringVelocity: 0.2,
-                       options: [.beginFromCurrentState, .curveEaseOut]) {
-            anchor.view.layoutIfNeeded()
-        } completion: { _ in
-            self.didAttach(to: anchor)
-        }
     }
     
     private func anchor(at point: CGPoint) -> Anchor? {
