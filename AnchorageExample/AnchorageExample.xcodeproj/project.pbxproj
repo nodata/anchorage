@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92779A9727A4247500F9CE1B /* RequiredExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92779A9627A4247500F9CE1B /* RequiredExtensions.swift */; };
 		92AFD2BB27A2527300ADADC0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AFD2BA27A2527300ADADC0 /* AppDelegate.swift */; };
 		92AFD2BD27A2527300ADADC0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AFD2BC27A2527300ADADC0 /* SceneDelegate.swift */; };
 		92AFD2BF27A2527300ADADC0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AFD2BE27A2527300ADADC0 /* ViewController.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		92779A9627A4247500F9CE1B /* RequiredExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequiredExtensions.swift; path = ../../RequiredExtensions.swift; sourceTree = "<group>"; };
 		92AFD2B727A2527300ADADC0 /* AnchorageExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnchorageExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92AFD2BA27A2527300ADADC0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92AFD2BC27A2527300ADADC0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				92AFD2F927A2532400ADADC0 /* Anchorage.swift */,
+				92779A9627A4247500F9CE1B /* RequiredExtensions.swift */,
 				92AFD2F827A252FB00ADADC0 /* Example */,
 				92AFD2BA27A2527300ADADC0 /* AppDelegate.swift */,
 				92AFD2BC27A2527300ADADC0 /* SceneDelegate.swift */,
@@ -292,6 +295,7 @@
 				92AFD2F727A252E000ADADC0 /* ComponentMenuView.swift in Sources */,
 				92AFD2BF27A2527300ADADC0 /* ViewController.swift in Sources */,
 				92AFD2F327A252E000ADADC0 /* MenuViewController.swift in Sources */,
+				92779A9727A4247500F9CE1B /* RequiredExtensions.swift in Sources */,
 				92AFD2BB27A2527300ADADC0 /* AppDelegate.swift in Sources */,
 				92AFD2BD27A2527300ADADC0 /* SceneDelegate.swift in Sources */,
 				92AFD2F627A252E000ADADC0 /* TwoViewsExample.swift in Sources */,

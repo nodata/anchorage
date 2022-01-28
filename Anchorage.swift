@@ -331,7 +331,6 @@ extension Anchorable {
             }
         }
         
-        // TODO: translate to global rect
         applyTo(viewController: root)
         let vcAnchors = Set(viewControllers).flatMap { ($0 as? Anchoring)!.anchors(for: self) }
         let viewAnchors = Set(views).flatMap { ($0 as? Anchoring)!.anchors(for: self) }
@@ -361,33 +360,6 @@ extension Anchorable {
         UIView.animate(withDuration: 0.1, delay: 0.0, options: [.curveEaseInOut, .beginFromCurrentState]) {
             root.anchoringHighlightView.alpha = 1.0
         } completion: { _ in }
-    }
-}
-
-private extension UIApplication {
-    var keyWindowScene: UIWindow? {
-        connectedScenes
-            .filter({$0.activationState == .foregroundActive})
-            .compactMap({$0 as? UIWindowScene})
-            .first?.windows.filter({$0.isKeyWindow}).first
-    }
-}
-
-private extension UIViewController {
-    
-    var isVisible: Bool {
-        guard isViewLoaded else { return false }
-        return view.window != nil
-    }
-    
-    var isTop: Bool {
-        if navigationController != nil {
-            return navigationController?.visibleViewController == self
-        } else if tabBarController != nil {
-            return tabBarController?.selectedViewController == self && presentedViewController == nil
-        } else {
-            return presentedViewController == nil && self.isVisible
-        }
     }
 }
 
